@@ -123,7 +123,7 @@ local TotemPulse = Core:NewModule("Totem Pulse", 1, {
     totemPulseBarBgColor =  { r = 0, g = 1, b = 0, a = .5 },
     totemPulseBarBorderColor = { r = 0, g = 0, b = 0, a = 1 },
     totemPulseBarBorderSize = 4,
-    totemPulseBarBorderStyle = "TotemPlates Tooltip squared",
+    totemPulseBarBorderStyle = "Gladdy Tooltip squared",
     totemPulseBarTexture = "Flat",
     totemPulseBarReverse = false,
     --cooldown
