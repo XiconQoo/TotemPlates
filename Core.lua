@@ -226,6 +226,8 @@ function Core:OnInitialize()
     self.LSM:Register("statusbar", "LiteStep", "Interface\\AddOns\\TotemPlates\\Images\\LiteStep.tga")
     self.LSM:Register("statusbar", "Flat", "Interface\\AddOns\\TotemPlates\\Images\\UI-StatusBar")
     self.LSM:Register("font", "DorisPP", "Interface\\AddOns\\TotemPlates\\Images\\DorisPP.TTF")
+    self.LSM:Register("border", "Gladdy Tooltip round", "Interface\\AddOns\\Gladdy\\Images\\UI-Tooltip-Border_round_selfmade")
+    self.LSM:Register("border", "Gladdy Tooltip squared", "Interface\\AddOns\\Gladdy\\Images\\UI-Tooltip-Border_square_selfmade")
 
     self.dbi = LibStub("AceDB-3.0"):New("TotemPlatesXZ", self.defaults)
     self.dbi.RegisterCallback(self, "OnProfileChanged", "OnProfileChanged")
