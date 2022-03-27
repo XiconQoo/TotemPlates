@@ -25,13 +25,13 @@ local PREFIX = "TotemPlates v"
 
 ---------------------------
 
-local MAJOR, MINOR = "TotemPlates", 1
+local MAJOR, MINOR = "TotemPlates", 2
 local Core = LibStub:NewLibrary(MAJOR, MINOR)
 local L
 Core.debug = false
 
 Core.version_major_num = 1
-Core.version_minor_num = 0.00
+Core.version_minor_num = 0.01
 Core.version_num = Core.version_major_num + Core.version_minor_num
 Core.version_releaseType = RELEASE_TYPES.release
 Core.version = PREFIX .. string.format("%.2f", Core.version_num) .. "-" .. Core.version_releaseType
