@@ -12,6 +12,16 @@
 - **TotemPlates** (show totem icons instead of normal nameplates, compatible with **Plater, NeatPlates, KUI, ThreatPlates, ElvUI, TukUI**)
 - **TotemPulse** (shows pulse on TotemPlate icon or beneath nameplate)
 
+## Compatibility
+
+- default Blizzard nameplates
+- ElvUI
+- TukUI
+- Plater
+- TidyPlates-ThreadPlates
+- KUI-Nameplates
+- Neatplates
+
 ---
 
 ### Changes
