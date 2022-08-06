@@ -1,5 +1,4 @@
-local select, string_lower = select, string.lower
-local GetLocale = GetLocale
+local select, string_lower, pairs = select, string.lower, pairs
 local GetSpellInfo = GetSpellInfo
 local LibStub = LibStub
 
@@ -52,10 +51,9 @@ local totemData = {
     [string_lower("Frost Resistance Totem")] = {id = 8181,texture = select(3, GetSpellInfo(8181)), color = {r = 0, g = 0, b = 0, a = 1}},
     -- Water
     [string_lower("Fire Resistance Totem")] = {id = 8184,texture = select(3, GetSpellInfo(8184)), color = {r = 0, g = 0, b = 0, a = 1}},
-    [string_lower("Poison Cleansing Totem")] = {id = 8166,texture = select(3, GetSpellInfo(8166)), color = {r = 0, g = 0, b = 0, a = 1}, pulse = 5},
     [string_lower("Disease Cleansing Totem")] = {id = 8170,texture = select(3, GetSpellInfo(8170)), color = {r = 0, g = 0, b = 0, a = 1}, pulse = 5},
     [string_lower("Healing Stream Totem")] = {id = 5394,texture = select(3, GetSpellInfo(5394)), color = {r = 0, g = 0, b = 0, a = 1}, pulse = 2},
-    [string_lower("Mana Tide Totem")] = {id = 16190,texture = select(3, GetSpellInfo(16190)), color = {r = 0.078, g = 0.9, b = 0.16, a = 1}},
+    [string_lower("Mana Tide Totem")] = {id = 16190,texture = select(3, GetSpellInfo(16190)), color = {r = 0.078, g = 0.9, b = 0.16, a = 1}, pulse = 3 },
     [string_lower("Mana Spring Totem")] = {id = 5675,texture = select(3, GetSpellInfo(5675)), color = {r = 0, g = 0, b = 0, a = 1}, pulse = 2},
     -- Earth
     [string_lower("Earthbind Totem")] = {id = 2484,texture = select(3, GetSpellInfo(2484)), color = {r = 0.5, g = 0.5, b = 0.5, a = 1}, pulse = 3},
@@ -66,13 +64,10 @@ local totemData = {
     [string_lower("Tremor Totem")] = {id = 8143,texture = select(3, GetSpellInfo(8143)), color = {r = 1, g = 0.9, b = 0.1, a = 1}, pulse = 3},
     -- Air
     [string_lower("Grounding Totem")] = {id = 8177,texture = select(3, GetSpellInfo(8177)), color = {r = 0, g = 0.53, b = 0.92, a = 1}},
-    [string_lower("Grace of Air Totem")] = {id = 8835,texture = select(3, GetSpellInfo(8835)), color = {r = 0, g = 0, b = 0, a = 1}},
     [string_lower("Nature Resistance Totem")] = {id = 10595,texture = select(3, GetSpellInfo(10595)), color = {r = 0, g = 0, b = 0, a = 1}},
     [string_lower("Windfury Totem")] = {id = 8512,texture = select(3, GetSpellInfo(8512)), color = {r = 0.96, g = 0, b = 0.07, a = 1}},
     [string_lower("Sentry Totem")] = {id = 6495, texture = select(3, GetSpellInfo(6495)), color = {r = 0, g = 0, b = 0, a = 1}},
-    [string_lower("Windwall Totem")] = {id = 15107,texture = select(3, GetSpellInfo(15107)), color = {r = 0, g = 0, b = 0, a = 1}},
     [string_lower("Wrath of Air Totem")] = {id = 3738,texture = select(3, GetSpellInfo(3738)), color = {r = 0, g = 0, b = 0, a = 1}},
-    [string_lower("Tranquil Air Totem")] = {id = 25908,texture = select(3, GetSpellInfo(25908)), color = {r = 0, g = 0, b = 0, a = 1}},
 }
 
 local totemSpellIdToPulse = {
@@ -80,8 +75,6 @@ local totemSpellIdToPulse = {
     [2484] = totemData[string_lower("Earthbind Totem")].pulse,
     [GetSpellInfo(totemData[string_lower("Tremor Totem")].id)] = totemData[string_lower("Tremor Totem")].pulse,
     [8143] = totemData[string_lower("Tremor Totem")].pulse,
-    [GetSpellInfo(totemData[string_lower("Poison Cleansing Totem")].id)] = totemData[string_lower("Poison Cleansing Totem")].pulse,
-    [8166] = totemData[string_lower("Poison Cleansing Totem")].pulse,
     [GetSpellInfo(totemData[string_lower("Disease Cleansing Totem")].id)] = totemData[string_lower("Disease Cleansing Totem")].pulse,
     [8170] = totemData[string_lower("Disease Cleansing Totem")].pulse,
     [GetSpellInfo(totemData[string_lower("Fire Nova Totem")].id)] = totemData[string_lower("Fire Nova Totem")].pulse,
@@ -98,6 +91,8 @@ local totemSpellIdToPulse = {
     [10586] = totemData[string_lower("Magma Totem")].pulse, -- Rank 3
     [10587] = totemData[string_lower("Magma Totem")].pulse, -- Rank 4
     [25552] = totemData[string_lower("Magma Totem")].pulse, -- Rank 5
+    [58731] = totemData[string_lower("Magma Totem")].pulse, -- Rank 6
+    [58734] = totemData[string_lower("Magma Totem")].pulse, -- Rank 7
     [GetSpellInfo(totemData[string_lower("Healing Stream Totem")].id)] = totemData[string_lower("Healing Stream Totem")].pulse,
     [5394] = totemData[string_lower("Healing Stream Totem")].pulse, -- Rank 1
     [6375] = totemData[string_lower("Healing Stream Totem")].pulse, -- Rank 2
@@ -105,12 +100,20 @@ local totemSpellIdToPulse = {
     [10462] = totemData[string_lower("Healing Stream Totem")].pulse, -- Rank 4
     [10463] = totemData[string_lower("Healing Stream Totem")].pulse, -- Rank 5
     [25567] = totemData[string_lower("Healing Stream Totem")].pulse, -- Rank 6
+    [58755] = totemData[string_lower("Healing Stream Totem")].pulse, -- Rank 7
+    [58756] = totemData[string_lower("Healing Stream Totem")].pulse, -- Rank 8
+    [58757] = totemData[string_lower("Healing Stream Totem")].pulse, -- Rank 9
     [GetSpellInfo(totemData[string_lower("Mana Spring Totem")].id)] = totemData[string_lower("Mana Spring Totem")].pulse,
     [5675] = totemData[string_lower("Mana Spring Totem")].pulse, -- Rank 1
     [10495] = totemData[string_lower("Mana Spring Totem")].pulse, -- Rank 2
     [10496] = totemData[string_lower("Mana Spring Totem")].pulse, -- Rank 3
     [10497] = totemData[string_lower("Mana Spring Totem")].pulse, -- Rank 4
     [25570] = totemData[string_lower("Mana Spring Totem")].pulse, -- Rank 5
+    [58771] = totemData[string_lower("Mana Spring Totem")].pulse, -- Rank 6
+    [58773] = totemData[string_lower("Mana Spring Totem")].pulse, -- Rank 7
+    [58774] = totemData[string_lower("Mana Spring Totem")].pulse, -- Rank 8
+    [GetSpellInfo(totemData[string_lower("Mana Tide Totem")].id)] = totemData[string_lower("Mana Tide Totem")].pulse,
+    [16190] = totemData[string_lower("Mana Tide Totem")].pulse, -- Rank 1
     [GetSpellInfo(totemData[string_lower("Stoneclaw Totem")].id)] = totemData[string_lower("Stoneclaw Totem")].pulse,
     [5730] = totemData[string_lower("Stoneclaw Totem")].pulse, -- Rank 1
     [6390] = totemData[string_lower("Stoneclaw Totem")].pulse, -- Rank 2
@@ -119,6 +122,9 @@ local totemSpellIdToPulse = {
     [10427] = totemData[string_lower("Stoneclaw Totem")].pulse, -- Rank 5
     [10428] = totemData[string_lower("Stoneclaw Totem")].pulse, -- Rank 6
     [25525] = totemData[string_lower("Stoneclaw Totem")].pulse, -- Rank 7
+    [58580] = totemData[string_lower("Stoneclaw Totem")].pulse, -- Rank 8
+    [58581] = totemData[string_lower("Stoneclaw Totem")].pulse, -- Rank 9
+    [58582] = totemData[string_lower("Stoneclaw Totem")].pulse, -- Rank 10
 }
 
 local totemNpcIdsToTotemData = {
@@ -147,6 +153,7 @@ local totemNpcIdsToTotemData = {
     [84519] = totemData[string_lower("Searing Totem")],
     [110730] = totemData[string_lower("Searing Totem")],
     [132178] = totemData[string_lower("Searing Totem")],
+    [9637] = totemData[string_lower("Searing Totem")],
 
     [5950] = totemData[string_lower("Flametongue Totem")],
     [6012] = totemData[string_lower("Flametongue Totem")],
@@ -215,9 +222,6 @@ local totemNpcIdsToTotemData = {
     [15487] = totemData[string_lower("Fire Resistance Totem")],
     [31169] = totemData[string_lower("Fire Resistance Totem")],
     [31170] = totemData[string_lower("Fire Resistance Totem")],
-
-    [5923] = totemData[string_lower("Poison Cleansing Totem")],
-    [22487] = totemData[string_lower("Poison Cleansing Totem")],
 
     [5924] = totemData[string_lower("Disease Cleansing Totem")],
 
@@ -326,10 +330,6 @@ local totemNpcIdsToTotemData = {
     [128537] = totemData[string_lower("Grounding Totem")],
     [136251] = totemData[string_lower("Grounding Totem")],
 
-    [7486] = totemData[string_lower("Grace of Air Totem")],
-    [7487] = totemData[string_lower("Grace of Air Totem")],
-    [15463] = totemData[string_lower("Grace of Air Totem")],
-
     [7467] = totemData[string_lower("Nature Resistance Totem")],
     [7468] = totemData[string_lower("Nature Resistance Totem")],
     [7469] = totemData[string_lower("Nature Resistance Totem")],
@@ -358,17 +358,18 @@ local totemNpcIdsToTotemData = {
     [71145] = totemData[string_lower("Sentry Totem")],
     [147410] = totemData[string_lower("Sentry Totem")],
 
-    [9687] = totemData[string_lower("Windwall Totem")],
-    [9688] = totemData[string_lower("Windwall Totem")],
-    [9689] = totemData[string_lower("Windwall Totem")],
-    [15492] = totemData[string_lower("Windwall Totem")],
-
     [15447] = totemData[string_lower("Wrath of Air Totem")],
     [36556] = totemData[string_lower("Wrath of Air Totem")],
-
-    [15803] = totemData[string_lower("Tranquil Air Totem")],
 }
 
-function Core:GetTotemData()
+function Core:GetSharedTotemData()
     return totemData, totemNpcIdsToTotemData, totemSpellIdToPulse
+end
+
+function Core:AddEntriesToTable(table, entries)
+    for k,v in pairs(entries) do
+        if not table[k] then
+            table[k] = v
+        end
+    end
 end
