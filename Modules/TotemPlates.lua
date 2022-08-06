@@ -364,11 +364,19 @@ function TotemPlates:ToggleAddon(nameplate, show)
     if addonFrames and #addonFrames > 0 then
         if show then
             for _,v in ipairs(addonFrames) do
-                v:Show()
+                if nameplate.unitFrame and nameplate.unitFrame.UpdateAllElements then
+                    nameplate.unitFrame:UpdateAllElements("NAME_PLATE_UNIT_ADDED")
+                else
+                    v:Show()
+                end
             end
         else
             for _,v in ipairs(addonFrames) do
-                v:Hide()
+                if nameplate.unitFrame and nameplate.unitFrame.UpdateAllElements then
+                    nameplate.unitFrame:UpdateAllElements("NAME_PLATE_UNIT_REMOVED")
+                else
+                    v:Hide()
+                end
             end
         end
     end
