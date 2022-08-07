@@ -1,6 +1,6 @@
 ## Interface: 30400
 ## Title: TotemPlates
-## Version: 1.02-Release
+## Version: 1.03-Release
 ## Notes: Replaces Totem Nameplates with Icons
 ## Author: XiconQoo, DnB_Junkee, Knall
 ## X-Email: contact me on discord Knall#1751
