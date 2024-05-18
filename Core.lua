@@ -360,3 +360,21 @@ function Core:SMFetch(lsmType, key)
     return smMediaType
 end
 
+
+----------------------------
+
+-- Slash Commands
+
+----------------------------
+
+SLASH_TOTEMPLATES1 = "/totemplates"
+SlashCmdList["TOTEMPLATES"] = function(msg)
+    if (msg == "ui" or msg == "options" or msg == "config") then
+        LibStub("AceConfigDialog-3.0"):Open("TotemPlates")
+    else
+        Core:Print(L["Valid slash commands are:"])
+        Core:Print("/totemplates ui")
+        Core:Print("/totemplates options")
+        Core:Print("/totemplates config")
+    end
+end

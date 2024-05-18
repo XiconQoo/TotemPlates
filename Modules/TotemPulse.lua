@@ -327,7 +327,7 @@ end
 function TotemPulse:AddTimerFrame(nameplate, timestamp, test)
     if (nameplate:IsShown() or test) and timestamp then
         if not nameplate.totemTick then
-            if timestamp.totemData.npc then
+            if timestamp.totemData and timestamp.totemData.npc then
                 nameplate.totemTick = TotemPulse:CreateCooldownFrame("COOLDOWN")
             else
                 nameplate.totemTick = TotemPulse:CreateCooldownFrame(Core.db.totemPulseTotems["totem" .. timestamp.id].style)
@@ -401,7 +401,7 @@ function TotemPulse.TotemPulseOnUpdate(totemTick)
         totemTick:Hide()
     end
     if not totemTick.bar and not (totemTick.once and totemTick.now - totemTick.timestamp >= totemTick.maxValue) then
-        if totemTick.totemData.npc or Core.db.totemPulseTotems["totem" .. totemTick.id].reverse then
+        if totemTick.totemData and totemTick.totemData.npc or Core.db.totemPulseTotems["totem" .. totemTick.id].reverse then
             totemTick.cd:SetCooldown(totemTick.now - totemTick.value, totemTick.maxValue)
         else
             totemTick.cd:SetCooldown(totemTick.now - (totemTick.maxValue - totemTick.value), totemTick.maxValue)
@@ -484,7 +484,7 @@ function TotemPulse:UpdateCooldown(cooldown)
         local totemPlateFrame = cooldown:GetParent().totemPlateFrame and cooldown:GetParent().totemPlateFrame
         local nameplate = cooldown:GetParent()
         cooldown:ClearAllPoints()
-        if cooldown.id and totemPlateFrame and totemPlateFrame:IsShown() and (cooldown.totemData.npc or Core.db.totemPulseTotems["totem" .. cooldown.id].attachTototemPlateFrame) then
+        if cooldown.id and totemPlateFrame and totemPlateFrame:IsShown() and (cooldown.totemData and cooldown.totemData.npc or Core.db.totemPulseTotems["totem" .. cooldown.id].attachTototemPlateFrame) then
             cooldown:SetPoint("TOPLEFT", totemPlateFrame, "TOPLEFT", Core.db.npTotemPlatesSize/16, -Core.db.npTotemPlatesSize/16)
             cooldown:SetPoint("BOTTOMRIGHT", totemPlateFrame, "BOTTOMRIGHT", -Core.db.npTotemPlatesSize/16, Core.db.npTotemPlatesSize/16)
         elseif cooldown.id and totemPlateFrame and totemPlateFrame:IsShown() and not Core.db.totemPulseTotems["totem" .. cooldown.id].attachTototemPlateFrame then
@@ -545,6 +545,7 @@ end
 function TotemPulse:TestOnce()
     local totemPlatesTestFrame = Core.modules["Totem Plates"].testFrame
     if totemPlatesTestFrame then
+        totemPlatesTestFrame.totemData = npcIdToTotemData[5913]
         if totemPlatesTestFrame.totemTick
                 and (Core.db.totemPulseTotems["totem" .. npcIdToTotemData[5913].id].style == "COOLDOWN" and totemPlatesTestFrame.totemTick.bar
                 or Core.db.totemPulseTotems["totem" .. npcIdToTotemData[5913].id].style ~= "COOLDOWN" and not totemPlatesTestFrame.totemTick.bar) then

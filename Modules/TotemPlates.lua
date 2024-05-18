@@ -23,7 +23,15 @@ local function GetTotemColorDefaultOptions()
         return a.name < b.name
     end)
     for i=1,#indexedList do
-        defaultDB["totem" .. indexedList[i].id] = {color = indexedList[i].color, enabled = true, alpha = 0.6, customText = ""}
+        defaultDB["totem" .. indexedList[i].id] = {
+            color = {r = 0.82, g = 0.149, b = 0.075, a = 1},--indexedList[i].color,
+            friendlyColor = {r = 0.075, g = 0.82, b = 0.086, a = 1},--indexedList[i].color,
+            enabled = true,
+            alpha = 0.6,
+            customText = "",
+            enemySize = 40,
+            friendlySize = 40,
+        }
         options["npTotemsHideDisabledTotems"] = {
             order = 1,
             name = L["Hide Disabled Totem Plates"],
@@ -46,7 +54,7 @@ local function GetTotemColorDefaultOptions()
             args = {
                 headerTotemConfig = {
                     type = "header",
-                    name = print(indexedList[i].id) and format("|T%s:20|t %s", indexedList[i].texture, select(1, GetSpellInfo(indexedList[i].id))),
+                    name = format("|T%s:20|t %s", indexedList[i].texture, select(1, GetSpellInfo(indexedList[i].id))),
                     order = 1,
                 },
                 enabled = {
@@ -55,9 +63,59 @@ local function GetTotemColorDefaultOptions()
                     desc = "Enable " .. format("|T%s:20|t %s", indexedList[i].texture, select(1, GetSpellInfo(indexedList[i].id))),
                     type = "toggle",
                     width = "full",
-                    get = function() return Core.dbi.profile.npTotemColors["totem" .. indexedList[i].id].enabled end,
+                    get = function() return Core.dbi.profile.npTotemOptions["totem" .. indexedList[i].id].enabled end,
                     set = function(_, value)
-                        Core.dbi.profile.npTotemColors["totem" .. indexedList[i].id].enabled = value
+                        Core.dbi.profile.npTotemOptions["totem" .. indexedList[i].id].enabled = value
+                        Core:UpdateFrame()
+                    end
+                },
+                headerGeneral = {
+                    type = "header",
+                    name = L["General"],
+                    order = 10,
+                },
+                alpha = {
+                    type = "range",
+                    name = L["Alpha"],
+                    order = 11,
+                    min = 0,
+                    max = 1,
+                    step = 0.1,
+                    width = "full",
+                    get = function()
+                        return Core.dbi.profile.npTotemOptions["totem" .. indexedList[i].id].alpha
+                    end,
+                    set = function(_, value)
+                        Core.dbi.profile.npTotemOptions["totem" .. indexedList[i].id].alpha = value
+                        Core:UpdateFrame()
+                    end
+                },
+                customText = {
+                    type = "input",
+                    name = L["Custom totem name"],
+                    order = 12,
+                    width = "full",
+                    get = function() return Core.db.npTotemOptions["totem" .. indexedList[i].id].customText end,
+                    set = function(_, value) Core.db.npTotemOptions["totem" .. indexedList[i].id].customText = value Core:UpdateFrame() end
+                },
+                headerEnemy = {
+                    type = "header",
+                    name = L["Enemy"],
+                    order = 20,
+                },
+                enemySize = {
+                    type = "range",
+                    name = L["Size"],
+                    order = 21,
+                    min = 1,
+                    max = 100,
+                    step = 0.1,
+                    width = "full",
+                    get = function()
+                        return Core.dbi.profile.npTotemOptions["totem" .. indexedList[i].id].enemySize
+                    end,
+                    set = function(_, value)
+                        Core.dbi.profile.npTotemOptions["totem" .. indexedList[i].id].enabled = value
                         Core:UpdateFrame()
                     end
                 },
@@ -65,46 +123,64 @@ local function GetTotemColorDefaultOptions()
                     type = "color",
                     name = L["Border color"],
                     desc = L["Color of the border"],
-                    order = 3,
+                    order = 22,
                     hasAlpha = true,
                     width = "full",
                     get = function()
-                        return Core.dbi.profile.npTotemColors["totem" .. indexedList[i].id].color.r,
-                        Core.dbi.profile.npTotemColors["totem" .. indexedList[i].id].color.g,
-                        Core.dbi.profile.npTotemColors["totem" .. indexedList[i].id].color.b,
-                        Core.dbi.profile.npTotemColors["totem" .. indexedList[i].id].color.a
+                        return Core.dbi.profile.npTotemOptions["totem" .. indexedList[i].id].color.r,
+                        Core.dbi.profile.npTotemOptions["totem" .. indexedList[i].id].color.g,
+                        Core.dbi.profile.npTotemOptions["totem" .. indexedList[i].id].color.b,
+                        Core.dbi.profile.npTotemOptions["totem" .. indexedList[i].id].color.a
                     end,
                     set = function(_, r, g, b, a)
-                        Core.dbi.profile.npTotemColors["totem" .. indexedList[i].id].color.r,
-                        Core.dbi.profile.npTotemColors["totem" .. indexedList[i].id].color.g,
-                        Core.dbi.profile.npTotemColors["totem" .. indexedList[i].id].color.b,
-                        Core.dbi.profile.npTotemColors["totem" .. indexedList[i].id].color.a = r, g, b, a
+                        Core.dbi.profile.npTotemOptions["totem" .. indexedList[i].id].color.r,
+                        Core.dbi.profile.npTotemOptions["totem" .. indexedList[i].id].color.g,
+                        Core.dbi.profile.npTotemOptions["totem" .. indexedList[i].id].color.b,
+                        Core.dbi.profile.npTotemOptions["totem" .. indexedList[i].id].color.a = r, g, b, a
                         Core:UpdateFrame()
                     end,
                 },
-                alpha = {
+                headerFriendly = {
+                    type = "header",
+                    name = L["Friendly"],
+                    order = 30,
+                },
+                friendlySize = {
                     type = "range",
-                    name = L["Alpha"],
-                    order = 4,
-                    min = 0,
-                    max = 1,
+                    name = L["Size"],
+                    order = 31,
+                    min = 1,
+                    max = 100,
                     step = 0.1,
                     width = "full",
                     get = function()
-                        return Core.dbi.profile.npTotemColors["totem" .. indexedList[i].id].alpha
+                        return Core.dbi.profile.npTotemOptions["totem" .. indexedList[i].id].friendlySize
                     end,
                     set = function(_, value)
-                        Core.dbi.profile.npTotemColors["totem" .. indexedList[i].id].alpha = value
+                        Core.dbi.profile.npTotemOptions["totem" .. indexedList[i].id].friendlySize = value
                         Core:UpdateFrame()
                     end
                 },
-                customText = {
-                    type = "input",
-                    name = L["Custom totem name"],
-                    order = 5,
+                friendlyColor = {
+                    type = "color",
+                    name = L["Border color"],
+                    desc = L["Color of the border"],
+                    order = 32,
+                    hasAlpha = true,
                     width = "full",
-                    get = function() return Core.db.npTotemColors["totem" .. indexedList[i].id].customText end,
-                    set = function(_, value) Core.db.npTotemColors["totem" .. indexedList[i].id].customText = value Core:UpdateFrame() end
+                    get = function()
+                        return Core.dbi.profile.npTotemOptions["totem" .. indexedList[i].id].friendlyColor.r,
+                        Core.dbi.profile.npTotemOptions["totem" .. indexedList[i].id].friendlyColor.g,
+                        Core.dbi.profile.npTotemOptions["totem" .. indexedList[i].id].friendlyColor.b,
+                        Core.dbi.profile.npTotemOptions["totem" .. indexedList[i].id].friendlyColor.a
+                    end,
+                    set = function(_, r, g, b, a)
+                        Core.dbi.profile.npTotemOptions["totem" .. indexedList[i].id].friendlyColor.r,
+                        Core.dbi.profile.npTotemOptions["totem" .. indexedList[i].id].friendlyColor.g,
+                        Core.dbi.profile.npTotemOptions["totem" .. indexedList[i].id].friendlyColor.b,
+                        Core.dbi.profile.npTotemOptions["totem" .. indexedList[i].id].friendlyColor.a = r, g, b, a
+                        Core:UpdateFrame()
+                    end,
                 },
             }
         }
@@ -132,7 +208,8 @@ local TotemPlates = Core:NewModule("Totem Plates", 2, {
     npTotemPlatesAlpha = 0.6,
     npTotemPlatesAlphaAlways = false,
     npTotemPlatesAlphaAlwaysTargeted = false,
-    npTotemColors = select(1, GetTotemColorDefaultOptions()),
+    --npTotemOptions = select(1, GetTotemColorDefaultOptions()),
+    npTotemOptions = select(1, GetTotemColorDefaultOptions()),
     npTotemsHideDisabledTotems = false,
 })
 
@@ -233,17 +310,23 @@ function TotemPlates:UpdateFrameOnce()
     end
 
     for k,nameplate in pairs(self.activeTotemNameplates) do
+        local isEnemy = UnitIsEnemy("player", nameplate.totemPlateFrame.unitID)
+
         local totemDataEntry = nameplate.totemPlateFrame.totemDataEntry
-        nameplate.totemPlateFrame:SetWidth(Core.db.npTotemPlatesSize * Core.db.npTotemPlatesWidthFactor)
-        nameplate.totemPlateFrame:SetHeight(Core.db.npTotemPlatesSize)
+        local dbData = Core.db.npTotemOptions["totem" .. totemDataEntry.id]
         nameplate.totemPlateFrame.totemBorder:SetTexture(Core.db.npTotemPlatesBorderStyle)
-        nameplate.totemPlateFrame.totemBorder:SetVertexColor(Core.db.npTotemColors["totem" .. totemDataEntry.id].color.r,
-                Core.db.npTotemColors["totem" .. totemDataEntry.id].color.g,
-                Core.db.npTotemColors["totem" .. totemDataEntry.id].color.b,
-                Core.db.npTotemColors["totem" .. totemDataEntry.id].color.a)
+        if isEnemy then
+            nameplate.totemPlateFrame:SetHeight(dbData.enemySize)
+            nameplate.totemPlateFrame:SetWidth(dbData.enemySize * Core.db.npTotemPlatesWidthFactor)
+            nameplate.totemPlateFrame.totemBorder:SetVertexColor(Core:SetColor(dbData.color))
+        else
+            nameplate.totemPlateFrame:SetHeight(dbData.friendlySize)
+            nameplate.totemPlateFrame:SetWidth(dbData.friendlySize * Core.db.npTotemPlatesWidthFactor)
+            nameplate.totemPlateFrame.totemBorder:SetVertexColor(Core:SetColor(dbData.friendlyColor))
+        end
         nameplate.totemPlateFrame.totemName:SetPoint("TOP", nameplate.totemPlateFrame, "BOTTOM", Core.db.npTremorFontXOffset, Core.db.npTremorFontYOffset)
         nameplate.totemPlateFrame.totemName:SetFont(Core:SMFetch("font", "npTremorFont"), Core.db.npTremorFontSize, "OUTLINE")
-        nameplate.totemPlateFrame.totemName:SetText(Core.db.npTotemColors["totem" .. totemDataEntry.id].customText or "")
+        nameplate.totemPlateFrame.totemName:SetText(dbData.customText or "")
         self:SetTotemAlpha(nameplate.totemPlateFrame, k)
 
         if not Core.db.npTotems then
@@ -268,15 +351,15 @@ function TotemPlates:UpdateFrameOnce()
             nameplate.totemPlateFrame:Hide()
             self:ToggleAddon(nameplate, true)
         end
-        if Core.db.npTotems and Core.db.npTotemColors["totem" .. totemDataEntry.id].enabled then
+        if Core.db.npTotems and Core.db.npTotemOptions["totem" .. totemDataEntry.id].enabled then
             nameplate.totemPlateFrame:Show()
             self:ToggleAddon(nameplate)
         end
-        if Core.db.npTotems and not Core.db.npTotemColors["totem" .. totemDataEntry.id].enabled then
+        if Core.db.npTotems and not Core.db.npTotemOptions["totem" .. totemDataEntry.id].enabled then
             nameplate.totemPlateFrame:Hide()
             self:ToggleAddon(nameplate, true)
         end
-        if Core.db.npTotems and not Core.db.npTotemColors["totem" .. totemDataEntry.id].enabled and Core.db.npTotemsHideDisabledTotems then
+        if Core.db.npTotems and not Core.db.npTotemOptions["totem" .. totemDataEntry.id].enabled and Core.db.npTotemsHideDisabledTotems then
             nameplate.totemPlateFrame:Hide()
             self:ToggleAddon(nameplate)
         end
@@ -387,7 +470,7 @@ function TotemPlates:ToggleAddon(nameplate, show)
 end
 
 function TotemPlates.OnUpdate(self)
-    local alpha = self.totemDataEntry.npc and 1 or Core.db.npTotemColors["totem" .. self.totemDataEntry.id].alpha
+    local alpha = self.totemDataEntry.npc and 1 or Core.db.npTotemOptions["totem" .. self.totemDataEntry.id].alpha
     if (UnitIsUnit("mouseover", self.unitID) or UnitIsUnit("target", self.unitID)) and alpha > 0 then
         self.selectionHighlight:SetAlpha(.25)
     else
@@ -424,11 +507,27 @@ function TotemPlates:OnUnitEvent(unitID)
     if not totemDataEntry then
         return
     end
-    if totemDataEntry and (Core.db.npTotemColors["totem" .. totemDataEntry.id] and Core.db.npTotemColors["totem" .. totemDataEntry.id].enabled or totemDataEntry.npc) then-- modify this nameplates
+    local dbTotemData = Core.db.npTotemOptions["totem" .. totemDataEntry.id]
+    if totemDataEntry and (dbTotemData and dbTotemData.enabled or totemDataEntry.npc) then-- modify this nameplates
         if #self.totemPlateCache > 0 then
             nameplate.totemPlateFrame = tremove(self.totemPlateCache, #self.totemPlateCache)
         else
             self:CreateTotemFrame(nameplate)
+        end
+        if isEnemy and not totemDataEntry.npc then
+            nameplate.totemPlateFrame:SetHeight(dbTotemData.enemySize)
+            nameplate.totemPlateFrame:SetWidth(dbTotemData.enemySize * Core.db.npTotemPlatesWidthFactor)
+            nameplate.totemPlateFrame.totemBorder:SetVertexColor(Core:SetColor(dbTotemData.color))
+        elseif not totemDataEntry.npc then
+            nameplate.totemPlateFrame:SetHeight(dbTotemData.friendlySize)
+            nameplate.totemPlateFrame:SetWidth(dbTotemData.friendlySize * Core.db.npTotemPlatesWidthFactor)
+            nameplate.totemPlateFrame.totemBorder:SetVertexColor(Core:SetColor(dbTotemData.friendlyColor))
+        else
+            nameplate.totemPlateFrame.totemBorder:SetVertexColor(totemDataEntry.color.r,
+                    totemDataEntry.color.g,
+                    totemDataEntry.color.b,
+                    totemDataEntry.color.a)
+            nameplate.totemPlateFrame.totemName:SetText(totemDataEntry.customText or "")
         end
         nameplate.totemPlateFrame.unitID = unitID
         nameplate.totemPlateFrame.totemDataEntry = totemDataEntry
@@ -437,25 +536,12 @@ function TotemPlates:OnUnitEvent(unitID)
         nameplate.totemPlateFrame:ClearAllPoints()
         nameplate.totemPlateFrame:SetPoint("CENTER", nameplate, "CENTER", 0, 0)
         nameplate.totemPlateFrame.totemIcon:SetTexture(totemDataEntry.texture)
-        if totemDataEntry.npc then
-            nameplate.totemPlateFrame.totemBorder:SetVertexColor(totemDataEntry.color.r,
-                    totemDataEntry.color.g,
-                    totemDataEntry.color.b,
-                    totemDataEntry.color.a)
-            nameplate.totemPlateFrame.totemName:SetText(totemDataEntry.customText or "")
-        else
-            nameplate.totemPlateFrame.totemBorder:SetVertexColor(Core.db.npTotemColors["totem" .. totemDataEntry.id].color.r,
-                    Core.db.npTotemColors["totem" .. totemDataEntry.id].color.g,
-                    Core.db.npTotemColors["totem" .. totemDataEntry.id].color.b,
-                    Core.db.npTotemColors["totem" .. totemDataEntry.id].color.a)
-            nameplate.totemPlateFrame.totemName:SetText(Core.db.npTotemColors["totem" .. totemDataEntry.id].customText or "")
-        end
         nameplate.totemPlateFrame.parent = nameplate
         nameplate.totemPlateFrame:Show()
         TotemPlates:SetTotemAlpha(nameplate.totemPlateFrame, unitID)
         self:ToggleAddon(nameplate, false)
         self.activeTotemNameplates[unitID] = nameplate
-    elseif totemDataEntry and not totemDataEntry.npc and not Core.db.npTotemColors["totem" .. totemDataEntry.id].enabled and Core.db.npTotemsHideDisabledTotems then
+    elseif totemDataEntry and not totemDataEntry.npc and not dbTotemData.enabled and Core.db.npTotemsHideDisabledTotems then
         if nameplate.totemPlateFrame then
             nameplate.totemPlateFrame:Hide()
             nameplate.totemPlateFrame:SetParent(nil)
@@ -471,7 +557,7 @@ end
 function TotemPlates:SetTotemAlpha(totemPlateFrame, unitID)
     local targetExists = UnitExists("target")
     local totemDataEntry = totemPlateFrame.totemDataEntry
-    local alpha = totemDataEntry.npc and 1 or Core.db.npTotemColors["totem" .. totemDataEntry.id].alpha or 1
+    local alpha = totemDataEntry.npc and 1 or Core.db.npTotemOptions["totem" .. totemDataEntry.id].alpha or 1
     if targetExists then
         if (UnitIsUnit(unitID, "target")) then -- is target
             if Core.db.npTotemPlatesAlphaAlwaysTargeted then
@@ -524,11 +610,11 @@ function TotemPlates:TestOnce()
         self.testFrame.totemPlateFrame:ClearAllPoints()
         self.testFrame.totemPlateFrame:SetPoint("CENTER", self.testFrame, "CENTER", 0, 0)
         self.testFrame.totemPlateFrame.totemIcon:SetTexture(totemDataEntry.texture)
-        self.testFrame.totemPlateFrame.totemBorder:SetVertexColor(Core.db.npTotemColors["totem" .. totemDataEntry.id].color.r,
-                Core.db.npTotemColors["totem" .. totemDataEntry.id].color.g,
-                Core.db.npTotemColors["totem" .. totemDataEntry.id].color.b,
-                Core.db.npTotemColors["totem" .. totemDataEntry.id].color.a)
-        self.testFrame.totemPlateFrame.totemName:SetText(Core.db.npTotemColors["totem" .. totemDataEntry.id].customText or "")
+        self.testFrame.totemPlateFrame.totemBorder:SetVertexColor(Core.db.npTotemOptions["totem" .. totemDataEntry.id].color.r,
+                Core.db.npTotemOptions["totem" .. totemDataEntry.id].color.g,
+                Core.db.npTotemOptions["totem" .. totemDataEntry.id].color.b,
+                Core.db.npTotemOptions["totem" .. totemDataEntry.id].color.a)
+        self.testFrame.totemPlateFrame.totemName:SetText(Core.db.npTotemOptions["totem" .. totemDataEntry.id].customText or "")
         self.testFrame.totemPlateFrame.parent = self.testFrame
         self.testFrame.totemPlateFrame:Show()
         self.activeTotemNameplates["player"] = self.testFrame
@@ -603,7 +689,7 @@ function TotemPlates:GetOptions()
                             name = L["Icon"],
                             order = 1,
                         },
-                        npTotemPlatesSize = Core:option({
+                        npTotemPlatesSize = {
                             type = "range",
                             name = L["Totem size"],
                             desc = L["Size of totem icons"],
@@ -612,7 +698,26 @@ function TotemPlates:GetOptions()
                             max = 100,
                             step = 1,
                             width = "full",
-                        }),
+                            get = function(info)
+                                local options = {}
+                                local db = GetTotemColorDefaultOptions()
+                                for k,v in pairs(db) do
+                                    table.insert(options, Core.dbi.profile.npTotemOptions[k].enemySize)
+                                    table.insert(options, Core.dbi.profile.npTotemOptions[k].friendlySize)
+                                end
+
+                                return Core:GetFromMultipleOptions(options)
+                            end,
+                            set = function(info, value)
+                                local key = info.arg or info[#info]
+                                Core.dbi.profile[key] = value
+                                for k,v in pairs(GetTotemColorDefaultOptions()) do
+                                    Core.dbi.profile.npTotemOptions[k].enemySize = value
+                                    Core.dbi.profile.npTotemOptions[k].friendlySize = value
+                                end
+                                Core:UpdateFrame()
+                            end,
+                        },
                         npTotemPlatesWidthFactor = Core:option({
                             type = "range",
                             name = L["Icon Width Factor"],
@@ -709,7 +814,7 @@ function TotemPlates:GetOptions()
                             order = 23,
                             get = function()
                                 local alpha, i = nil, 1
-                                for _,v in pairs(Core.dbi.profile.npTotemColors) do
+                                for _,v in pairs(Core.dbi.profile.npTotemOptions) do
                                     if i == 1 then
                                         alpha = v.alpha
                                         i = i + 1
@@ -722,7 +827,7 @@ function TotemPlates:GetOptions()
                                 return alpha
                             end,
                             set = function(_, value)
-                                for _,v in pairs(Core.dbi.profile.npTotemColors) do
+                                for _,v in pairs(Core.dbi.profile.npTotemOptions) do
                                     v.alpha = value
                                 end
                                 Core:UpdateFrame()
@@ -754,7 +859,7 @@ function TotemPlates:GetOptions()
                             get = function()
                                 local color
                                 local i = 1
-                                for _,v in pairs(Core.dbi.profile.npTotemColors) do
+                                for _,v in pairs(Core.dbi.profile.npTotemOptions) do
                                     if i == 1 then
                                         color = v.color
                                         i = i + 1
@@ -767,7 +872,7 @@ function TotemPlates:GetOptions()
                                 return color.r, color.g, color.b, color.a
                             end,
                             set = function(_, r, g, b, a)
-                                for _,v in pairs(Core.dbi.profile.npTotemColors) do
+                                for _,v in pairs(Core.dbi.profile.npTotemOptions) do
                                     v.color.r = r
                                     v.color.g = g
                                     v.color.b = b
@@ -776,11 +881,41 @@ function TotemPlates:GetOptions()
                                 Core:UpdateFrame()
                             end,
                         },
+                        npAllFriendlyTotemColors = {
+                            type = "color",
+                            name = L["All friendly totem border color"],
+                            order = 42,
+                            hasAlpha = true,
+                            get = function()
+                                local friendlyColor
+                                local i = 1
+                                for _,v in pairs(Core.dbi.profile.npTotemOptions) do
+                                    if i == 1 then
+                                        friendlyColor = v.friendlyColor
+                                        i = i + 1
+                                    else
+                                        if v.friendlyColor.r ~= friendlyColor.r or v.friendlyColor.g ~= friendlyColor.g or v.friendlyColor.b ~= friendlyColor.b or v.friendlyColor.a ~= friendlyColor.a then
+                                            return 0, 0, 0, 0
+                                        end
+                                    end
+                                end
+                                return friendlyColor.r, friendlyColor.g, friendlyColor.b, friendlyColor.a
+                            end,
+                            set = function(_, r, g, b, a)
+                                for _,v in pairs(Core.dbi.profile.npTotemOptions) do
+                                    v.friendlyColor.r = r
+                                    v.friendlyColor.g = g
+                                    v.friendlyColor.b = b
+                                    v.friendlyColor.a = a
+                                end
+                                Core:UpdateFrame()
+                            end,
+                        },
                     },
                 },
             },
         },
-        npTotemColors = {
+        npTotemOptions = {
             order = 50,
             name = L["Customize Totems"],
             type = "group",

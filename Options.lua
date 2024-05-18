@@ -61,6 +61,34 @@ local function setOpt(info, value)
     Core:UpdateFrame()
 end
 
+function Core:GetFromMultipleOptions(options)
+    local val = options[1]
+    local isAllSameValue = true
+    for _,v in pairs(options) do
+        if type(v) == "table" then
+            if not (v.r == val.r and v.g == val.g and v.b == val.b and v.a == val.a) then
+                isAllSameValue = false
+                break
+            end
+        else
+            if val ~= v then
+                isAllSameValue = false
+                break
+            end
+        end
+    end
+
+    if type(val) == "table" then
+        if isAllSameValue then
+            return val.r, val.g, val.b, val.a
+        else
+            return 0,0,0,0
+        end
+    else
+        return isAllSameValue and val or ""
+    end
+end
+
 function Core:UpdateFrame()
     for _, v in self:IterModules() do
         self:Call(v, "UpdateFrame")
