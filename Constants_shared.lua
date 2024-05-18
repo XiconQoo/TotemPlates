@@ -113,6 +113,7 @@ local totemSpellIdToPulse = {
     [58580] = totemData[string_lower("Stoneclaw Totem")].pulse, -- Rank 8
     [58581] = totemData[string_lower("Stoneclaw Totem")].pulse, -- Rank 9
     [58582] = totemData[string_lower("Stoneclaw Totem")].pulse, -- Rank 10
+    [15787] = totemData[string_lower("Fire Nova Totem")].pulse,
 }
 
 local totemNpcIdsToTotemData = {
@@ -202,6 +203,8 @@ local totemNpcIdsToTotemData = {
     [15486] = totemData[string_lower("Frost Resistance Totem")],
     [31171] = totemData[string_lower("Frost Resistance Totem")],
     [31172] = totemData[string_lower("Frost Resistance Totem")],
+
+    [10183] = totemData[string_lower("Fire Nova Totem")],
 
     -- Water
     [5927] = totemData[string_lower("Fire Resistance Totem")],
