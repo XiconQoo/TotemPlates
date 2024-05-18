@@ -23,11 +23,32 @@ local totemData = {
 }
 
 local totemSpellIdToPulse = {
+    --Fire
     [GetSpellInfo(totemData[string_lower("Disease Cleansing Totem")].id)] = totemData[string_lower("Disease Cleansing Totem")].pulse,
     [8170] = totemData[string_lower("Disease Cleansing Totem")].pulse,
 }
 
 local totemNpcIdsToTotemData = {
+    --Fire
+    [17539] = totemData[string_lower("Totem of Wrath")],
+    [22970] = totemData[string_lower("Totem of Wrath")],
+    [22971] = totemData[string_lower("Totem of Wrath")],
+    [30652] = totemData[string_lower("Totem of Wrath")],
+    [30653] = totemData[string_lower("Totem of Wrath")],
+    [30654] = totemData[string_lower("Totem of Wrath")],
+
+    [15430] = totemData[string_lower("Earth Elemental Totem")],
+    [24649] = totemData[string_lower("Earth Elemental Totem")],
+    [39387] = totemData[string_lower("Earth Elemental Totem")],
+    [40247] = totemData[string_lower("Earth Elemental Totem")],
+    [72307] = totemData[string_lower("Earth Elemental Totem")],
+
+    [15439] = totemData[string_lower("Fire Elemental Totem")],
+    [40830] = totemData[string_lower("Fire Elemental Totem")],
+    [41337] = totemData[string_lower("Fire Elemental Totem")],
+    [41346] = totemData[string_lower("Fire Elemental Totem")],
+    [72301] = totemData[string_lower("Fire Elemental Totem")],
+
     [5924] = totemData[string_lower("Disease Cleansing Totem")],
 
     [3573] = totemData[string_lower("Mana Spring Totem")],
@@ -40,7 +61,8 @@ local totemNpcIdsToTotemData = {
     [31189] = totemData[string_lower("Mana Spring Totem")],
     [31190] = totemData[string_lower("Mana Spring Totem")],
 
-
+    [15447] = totemData[string_lower("Wrath of Air Totem")],
+    [36556] = totemData[string_lower("Wrath of Air Totem")],
 }
 
 local totemDataShared, totemNpcIdsToTotemDataShared, totemSpellIdToPulseShared = Core:GetSharedTotemData()

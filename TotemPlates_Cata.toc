@@ -1,4 +1,4 @@
-## Interface: 20504
+## Interface: 40400
 ## Title: TotemPlates
 ## Version: 1.10-Release
 ## Notes: Replaces Totem Nameplates with Icons
@@ -12,7 +12,7 @@ Core.lua
 Lang.lua
 Options.lua
 Constants_shared.lua
-Constants_BCC.lua
+Constants_Cata.lua
 EventListener.lua
 
 Modules/TotemPlates.lua

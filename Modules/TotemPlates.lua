@@ -46,7 +46,7 @@ local function GetTotemColorDefaultOptions()
             args = {
                 headerTotemConfig = {
                     type = "header",
-                    name = format("|T%s:20|t %s", indexedList[i].texture, select(1, GetSpellInfo(indexedList[i].id))),
+                    name = print(indexedList[i].id) and format("|T%s:20|t %s", indexedList[i].texture, select(1, GetSpellInfo(indexedList[i].id))),
                     order = 1,
                 },
                 enabled = {
@@ -387,7 +387,8 @@ function TotemPlates:ToggleAddon(nameplate, show)
 end
 
 function TotemPlates.OnUpdate(self)
-    if (UnitIsUnit("mouseover", self.unitID) or UnitIsUnit("target", self.unitID)) and Core.db.npTotemColors["totem" .. self.totemDataEntry.id].alpha > 0 then
+    local alpha = self.totemDataEntry.npc and 1 or Core.db.npTotemColors["totem" .. self.totemDataEntry.id].alpha
+    if (UnitIsUnit("mouseover", self.unitID) or UnitIsUnit("target", self.unitID)) and alpha > 0 then
         self.selectionHighlight:SetAlpha(.25)
     else
         self.selectionHighlight:SetAlpha(0)
@@ -423,7 +424,7 @@ function TotemPlates:OnUnitEvent(unitID)
     if not totemDataEntry then
         return
     end
-    if totemDataEntry and Core.db.npTotemColors["totem" .. totemDataEntry.id].enabled then-- modify this nameplates
+    if totemDataEntry and (Core.db.npTotemColors["totem" .. totemDataEntry.id] and Core.db.npTotemColors["totem" .. totemDataEntry.id].enabled or totemDataEntry.npc) then-- modify this nameplates
         if #self.totemPlateCache > 0 then
             nameplate.totemPlateFrame = tremove(self.totemPlateCache, #self.totemPlateCache)
         else
@@ -436,17 +437,25 @@ function TotemPlates:OnUnitEvent(unitID)
         nameplate.totemPlateFrame:ClearAllPoints()
         nameplate.totemPlateFrame:SetPoint("CENTER", nameplate, "CENTER", 0, 0)
         nameplate.totemPlateFrame.totemIcon:SetTexture(totemDataEntry.texture)
-        nameplate.totemPlateFrame.totemBorder:SetVertexColor(Core.db.npTotemColors["totem" .. totemDataEntry.id].color.r,
-                Core.db.npTotemColors["totem" .. totemDataEntry.id].color.g,
-                Core.db.npTotemColors["totem" .. totemDataEntry.id].color.b,
-                Core.db.npTotemColors["totem" .. totemDataEntry.id].color.a)
-        nameplate.totemPlateFrame.totemName:SetText(Core.db.npTotemColors["totem" .. totemDataEntry.id].customText or "")
+        if totemDataEntry.npc then
+            nameplate.totemPlateFrame.totemBorder:SetVertexColor(totemDataEntry.color.r,
+                    totemDataEntry.color.g,
+                    totemDataEntry.color.b,
+                    totemDataEntry.color.a)
+            nameplate.totemPlateFrame.totemName:SetText(totemDataEntry.customText or "")
+        else
+            nameplate.totemPlateFrame.totemBorder:SetVertexColor(Core.db.npTotemColors["totem" .. totemDataEntry.id].color.r,
+                    Core.db.npTotemColors["totem" .. totemDataEntry.id].color.g,
+                    Core.db.npTotemColors["totem" .. totemDataEntry.id].color.b,
+                    Core.db.npTotemColors["totem" .. totemDataEntry.id].color.a)
+            nameplate.totemPlateFrame.totemName:SetText(Core.db.npTotemColors["totem" .. totemDataEntry.id].customText or "")
+        end
         nameplate.totemPlateFrame.parent = nameplate
         nameplate.totemPlateFrame:Show()
         TotemPlates:SetTotemAlpha(nameplate.totemPlateFrame, unitID)
         self:ToggleAddon(nameplate, false)
         self.activeTotemNameplates[unitID] = nameplate
-    elseif totemDataEntry and not Core.db.npTotemColors["totem" .. totemDataEntry.id].enabled and Core.db.npTotemsHideDisabledTotems then
+    elseif totemDataEntry and not totemDataEntry.npc and not Core.db.npTotemColors["totem" .. totemDataEntry.id].enabled and Core.db.npTotemsHideDisabledTotems then
         if nameplate.totemPlateFrame then
             nameplate.totemPlateFrame:Hide()
             nameplate.totemPlateFrame:SetParent(nil)
@@ -462,19 +471,20 @@ end
 function TotemPlates:SetTotemAlpha(totemPlateFrame, unitID)
     local targetExists = UnitExists("target")
     local totemDataEntry = totemPlateFrame.totemDataEntry
+    local alpha = totemDataEntry.npc and 1 or Core.db.npTotemColors["totem" .. totemDataEntry.id].alpha or 1
     if targetExists then
         if (UnitIsUnit(unitID, "target")) then -- is target
             if Core.db.npTotemPlatesAlphaAlwaysTargeted then
-                totemPlateFrame:SetAlpha(Core.db.npTotemColors["totem" .. totemDataEntry.id].alpha)
+                totemPlateFrame:SetAlpha(alpha)
             else
                 totemPlateFrame:SetAlpha(1)
             end
         else -- is not target
-            totemPlateFrame:SetAlpha(Core.db.npTotemColors["totem" .. totemDataEntry.id].alpha)
+            totemPlateFrame:SetAlpha(alpha)
         end
     else -- no target
         if Core.db.npTotemPlatesAlphaAlways then
-            totemPlateFrame:SetAlpha(Core.db.npTotemColors["totem" .. totemDataEntry.id].alpha)
+            totemPlateFrame:SetAlpha(alpha)
         else
             totemPlateFrame:SetAlpha(0.95)
         end
